@@ -1,0 +1,81 @@
+package hello.vavr;
+
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
+import io.vavr.collection.List;
+import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class GameOfLifeTest {
+
+    /*
+
+    http://codingdojo.org/kata/GameOfLife/
+
+    1. Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
+    2. Any live cell with more than three live neighbours dies, as if by overcrowding.
+    3. Any live cell with two or three live neighbours lives on to the next generation.
+    4. Any dead cell with exactly three live neighbours becomes a live cell.
+
+     */
+
+    // 4 . . . . .
+    // 3 . o o o .
+    // 2 . o * o .
+    // 1 . o o o .
+    // 0 . . . . .
+    //   0 1 2 3 4
+    @Test
+    public void neighboursTest() {
+        assertThat(neighboursOf(Tuple.of(2, 2))).containsExactlyInAnyOrder(
+                Tuple.of(1, 3), Tuple.of(2, 3), Tuple.of(3, 3),
+                Tuple.of(1, 2), Tuple.of(3, 2),
+                Tuple.of(1, 1), Tuple.of(2, 1), Tuple.of(3, 1)
+        );
+    }
+
+    private List<Tuple2<Integer, Integer>> neighboursOf(Tuple2<Integer, Integer> cell) {
+        var deltas = List.of(-1, 0, 1);
+        return deltas.flatMap(x -> deltas.map(y -> Tuple.of(x, y)))
+                .map(delta -> Tuple.of(cell._1 + delta._1, cell._2 + delta._2))
+                .filter(it -> !it.equals(cell));
+    }
+
+    // 4 . . . . .
+    // 3 . o o o .
+    // 2 o o * o .
+    // 1 o * o o .
+    // 0 o o o . .
+    //   0 1 2 3 4
+    @Test
+    public void candidatesTest() {
+        assertThat(candidatesFor(List.of(Tuple.of(1, 1), Tuple.of(2, 2)))).containsExactlyInAnyOrder(
+                Tuple.of(1, 3), Tuple.of(2, 3), Tuple.of(3, 3),
+                Tuple.of(0, 2), Tuple.of(1, 2), Tuple.of(2, 2), Tuple.of(3, 2),
+                Tuple.of(0, 1), Tuple.of(1, 1), Tuple.of(2, 1), Tuple.of(3, 1),
+                Tuple.of(0, 0), Tuple.of(1, 0), Tuple.of(2, 0)
+        );
+    }
+
+    private List<Tuple2<Integer, Integer>> candidatesFor(List<Tuple2<Integer, Integer>> cells) {
+        return cells.flatMap(this::neighboursOf).prependAll(cells).distinct();
+    }
+
+    // 4 . . . . .
+    // 3 . . . . .
+    // 2 . . * . .
+    // 1 . * * o .
+    // 0 . . . . .
+    //   0 1 2 3 4
+    @Test
+    public void numberOfLivingNeighboursTest() {
+        var livingCells = List.of(Tuple.of(1, 1), Tuple.of(2, 1), Tuple.of(2, 2));
+        assertThat(numberOfLivingNeighbours(Tuple.of(3, 1), livingCells)).isEqualTo(2);
+    }
+
+    private int numberOfLivingNeighbours(Tuple2<Integer, Integer> cell, List<Tuple2<Integer, Integer>> livingCells) {
+        return neighboursOf(cell).filter(livingCells::contains).size();
+    }
+
+}
