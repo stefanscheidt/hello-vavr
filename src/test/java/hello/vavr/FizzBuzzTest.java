@@ -22,7 +22,8 @@ public class FizzBuzzTest {
         var fizzBuzz = fizz.zipWith(buzz, (fst, snd) -> fst + snd);
         return fizzBuzz
                 .zipWithIndex((fb, i) -> fb.isBlank() ? "" + (i + 1) : fb)
-                .take(count).toList();
+                .take(count)
+                .toList();
     }
 
 }

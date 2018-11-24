@@ -8,36 +8,30 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import static io.vavr.collection.List.of;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 
 public class OptionTest {
 
     @Test
     public void saveDivideTest() {
-        Function2<Integer, Integer, Integer> unsaveDivide = (x, y) -> x / y;
+        Function2<Integer, Integer, Integer> unsafeDivide = (x, y) -> x / y;
 
-        try {
-            unsaveDivide.apply(1, 0);
-            fail("should cause exception");
-        } catch (ArithmeticException ex) {
-            assertThat(ex).hasMessage("/ by zero");
-        }
+        assertThatExceptionOfType(ArithmeticException.class).isThrownBy(() ->
+                unsafeDivide.apply(1, 0)
+        );
 
-        var saveDivide = Function2.lift(unsaveDivide);
+        Function2<Integer, Integer, Option<Integer>> saveDivide = Function2.lift(unsafeDivide);
 
         assertThat(saveDivide.apply(1, 0)).isEqualTo(Option.none());
 
-        var reciprocalPercent = saveDivide.apply(100);
+        Function1<Integer, Option<Integer>> reciprocalPercent = saveDivide.apply(100);
 
-        List<Option<Integer>> percentages = of(-2, -1, 0, 1, 2).map(reciprocalPercent);
+        List<Option<Integer>> percentages = List.of(-2, -1, 0, 1, 2).map(reciprocalPercent);
 
         assertThat(percentages).containsExactly(
                 Option.some(-50), Option.some(-100), Option.none(), Option.some(100), Option.some(50));
 
-        assertThat(percentages.flatMap(Function1.identity())).containsExactly(
-                -50, -100, 100, 50);
+        assertThat(percentages.flatMap(Function1.identity())).containsExactly(-50, -100, 100, 50);
     }
 
     private Integer divideOrNull(int x, int y) {
@@ -59,12 +53,9 @@ public class OptionTest {
         assertThat(Option.some(0).map(y -> divideOrNull(10, y))).isEqualTo(Option.some(null));
 
         var optionResult = Option.some(0).map(y1 -> divideOrNull(10, y1));
-        try {
-            optionResult.map(it -> it * 10);
-            fail("should cause exception");
-        } catch (NullPointerException ex) {
-            // expected
-        }
+        assertThatNullPointerException().isThrownBy(() ->
+                optionResult.map(it -> it * 10)
+        );
 
         var optionResult2 = Option.some(0)
                 .map(y1 -> divideOrNull(10, y1))

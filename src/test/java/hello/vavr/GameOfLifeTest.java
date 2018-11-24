@@ -7,25 +7,30 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Rules:
+ * <ol>
+ *     <li>Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.</li>
+ *     <li>Any live cell with more than three live neighbours dies, as if by overcrowding.</li>
+ *     <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
+ *     <li>Any dead cell with exactly three live neighbours becomes a live cell.</li>
+ * </ol>
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Conway's Game of Life</a>
+ * @see <a href="http://codingdojo.org/kata/GameOfLif":>Game of Life Kata</a>
+ */
 public class GameOfLifeTest {
 
-    /*
-
-    http://codingdojo.org/kata/GameOfLife/
-
-    1. Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
-    2. Any live cell with more than three live neighbours dies, as if by overcrowding.
-    3. Any live cell with two or three live neighbours lives on to the next generation.
-    4. Any dead cell with exactly three live neighbours becomes a live cell.
-
+    /**
+     * <pre>
+     * 4 . . . . .
+     * 3 . o o o .
+     * 2 . o * o .
+     * 1 . o o o .
+     * 0 . . . . .
+     *   0 1 2 3 4
+     * </pre>
      */
-
-    // 4 . . . . .
-    // 3 . o o o .
-    // 2 . o * o .
-    // 1 . o o o .
-    // 0 . . . . .
-    //   0 1 2 3 4
     @Test
     public void neighboursTest() {
         assertThat(neighboursOf(Tuple.of(2, 2))).containsExactlyInAnyOrder(
@@ -42,12 +47,16 @@ public class GameOfLifeTest {
                 .filter(it -> !it.equals(cell));
     }
 
-    // 4 . . . . .
-    // 3 . o o o .
-    // 2 o o * o .
-    // 1 o * o o .
-    // 0 o o o . .
-    //   0 1 2 3 4
+    /**
+     * <pre>
+     * 4 . . . . .
+     * 3 . o o o .
+     * 2 o o * o .
+     * 1 o * o o .
+     * 0 o o o . .
+     *   0 1 2 3 4
+     * </pre>
+     */
     @Test
     public void candidatesTest() {
         assertThat(candidatesFor(List.of(Tuple.of(1, 1), Tuple.of(2, 2)))).containsExactlyInAnyOrder(
@@ -62,12 +71,16 @@ public class GameOfLifeTest {
         return cells.flatMap(this::neighboursOf).prependAll(cells).distinct();
     }
 
-    // 4 . . . . .
-    // 3 . . . . .
-    // 2 . . * . .
-    // 1 . * * o .
-    // 0 . . . . .
-    //   0 1 2 3 4
+    /**
+     * <pre>
+     * 4 . . . . .
+     * 3 . . . . .
+     * 2 . . * . .
+     * 1 . * * o .
+     * 0 . . . . .
+     *   0 1 2 3 4
+     * </pre>
+     */
     @Test
     public void numberOfLivingNeighboursTest() {
         var livingCells = List.of(Tuple.of(1, 1), Tuple.of(2, 1), Tuple.of(2, 2));
