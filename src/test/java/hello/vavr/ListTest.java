@@ -10,7 +10,8 @@ import static org.assertj.core.api.Assertions.fail;
 public class ListTest {
 
     /**
-     * List.of(x1, x2, x3, ..., xn).foldLeft(init, f) = f.apply(init, x1).apply(x2).apply(x3)...apply(xn)
+     * List.of(x1, x2, x3, ..., xn).foldLeft(init, f)
+     *     = f.apply(f.apply(...(f.apply(f.apply(init, x1), x2), ..., xn))
      */
     @Test
     public void foldLeftTest() {
