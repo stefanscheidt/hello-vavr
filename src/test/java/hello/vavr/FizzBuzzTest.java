@@ -1,6 +1,7 @@
 package hello.vavr;
 
 import io.vavr.collection.List;
+import io.vavr.collection.Stream;
 import org.junit.Test;
 
 import static io.vavr.Function0.constant;
@@ -17,8 +18,8 @@ public class FizzBuzzTest {
     }
 
     private List<String> fizzBuzz(int count) {
-        var fizz = List.fill(2, constant("")).append("Fizz").toStream().cycle(); // Stream.of("", "", "Fizz").cycle();
-        var buzz = List.fill(4, constant("")).append("Buzz").toStream().cycle(); // Stream.of("", "", "", "", "Buzz").cycle();
+        var fizz = Stream.fill(2, constant("")).append("Fizz").cycle(); // Stream.of("", "", "Fizz").cycle();
+        var buzz = Stream.fill(4, constant("")).append("Buzz").cycle(); // Stream.of("", "", "", "", "Buzz").cycle();
         var fizzBuzz = fizz.zipWith(buzz, (fst, snd) -> fst + snd);
         return fizzBuzz
                 .zipWithIndex((fb, i) -> fb.isBlank() ? "" + (i + 1) : fb)

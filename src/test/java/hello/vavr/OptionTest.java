@@ -28,10 +28,13 @@ public class OptionTest {
 
         List<Option<Integer>> percentages = List.of(-2, -1, 0, 1, 2).map(reciprocalPercent);
 
-        assertThat(percentages).containsExactly(
-                Option.some(-50), Option.some(-100), Option.none(), Option.some(100), Option.some(50));
+        assertThat(percentages).isEqualTo(
+                List.of(Option.some(-50), Option.some(-100), Option.none(), Option.some(100), Option.some(50))
+        );
 
-        assertThat(percentages.flatMap(Function1.identity())).containsExactly(-50, -100, 100, 50);
+        assertThat(percentages.flatMap(Function1.identity())).isEqualTo(
+                List.of(-50, -100, 100, 50)
+        );
     }
 
     private Integer divideOrNull(int x, int y) {

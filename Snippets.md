@@ -4,10 +4,10 @@
 private List<String> fizzBuzz(int count) {
 
     var fizz = Stream.of("", "", "Fizz").cycle();
-    // var fizz = List.fill(2, constant("")).append("Fizz").toStream().cycle();
+    // var fizz = Stream.fill(2, constant("")).append("Fizz").cycle();
 
     var buzz = Stream.of("", "", "", "", "Buzz").cycle();
-    // var buzz = List.fill(4, constant("")).append("Buzz").toStream().cycle();
+    // var buzz = Stream.fill(4, constant("")).append("Buzz").cycle();
 
     var fizzBuzz = fizz.zipWith(buzz, (fst, snd) -> fst + snd);
     return fizzBuzz
@@ -112,10 +112,13 @@ public void saveDivideTest() {
     // List<Option<Integer>>
     var percentages = List.of(-2, -1, 0, 1, 2).map(reciprocalPercent);
 
-    assertThat(percentages).containsExactly(
-            Option.some(-50), Option.some(-100), Option.none(), Option.some(100), Option.some(50));
+    assertThat(percentages).isEqualTo(
+            List.of(Option.some(-50), Option.some(-100), Option.none(), Option.some(100), Option.some(50))
+    );
 
-    assertThat(percentages.flatMap(Function1.identity())).containsExactly(-50, -100, 100, 50);
+    assertThat(percentages.flatMap(Function1.identity())).isEqualTo(
+            List.of(-50, -100, 100, 50)
+    );
 }
 ```
 
