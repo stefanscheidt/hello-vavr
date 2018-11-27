@@ -41,7 +41,10 @@ public class GameOfLifeTest {
     }
 
     private List<Tuple2<Integer, Integer>> neighboursOf(Tuple2<Integer, Integer> cell) {
-        return null;
+        var deltas = List.of(-1, 0, 1);
+        return deltas.flatMap(dx -> deltas.map(dy -> Tuple.of(dx, dy)))
+                .map(delta -> Tuple.of(cell._1 + delta._1, cell._2 + delta._2))
+                .filter(it -> !it.equals(cell));
     }
 
     /**
@@ -65,7 +68,7 @@ public class GameOfLifeTest {
     }
 
     private List<Tuple2<Integer, Integer>> candidatesFor(List<Tuple2<Integer, Integer>> cells) {
-        return null;
+        return cells.flatMap(this::neighboursOf).prependAll(cells).distinct();
     }
 
     /**
@@ -85,7 +88,7 @@ public class GameOfLifeTest {
     }
 
     private int numberOfLivingNeighbours(Tuple2<Integer, Integer> cell, List<Tuple2<Integer, Integer>> livingCells) {
-        return -1;
+        return neighboursOf(cell).filter(livingCells::contains).size();
     }
 
 }
