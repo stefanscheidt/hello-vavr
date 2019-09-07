@@ -17,7 +17,7 @@ public class ListTest {
      */
     @Test
     public void foldLeftTest() {
-        Function1<List<Integer>, Integer> sum = xs -> xs.foldLeft(0, (s, x) -> s + x);
+        Function1<List<Integer>, Integer> sum = xs -> xs.foldLeft(0, Integer::sum);
         assertThat(sum.apply(List.rangeClosed(1, 10))).isEqualTo(10/2 * (10 + 1));
 
         Function1<List<Integer>, Integer> prod = xs -> xs.foldLeft(1, (p, x) -> p * x);
