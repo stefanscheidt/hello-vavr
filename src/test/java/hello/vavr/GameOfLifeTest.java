@@ -3,7 +3,7 @@ package hello.vavr;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,6 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class GameOfLifeTest {
 
+    private Tuple2<Integer, Integer> cell(int x, int y) {
+        return Tuple.of(x, y);
+    }
+
     /**
      * <pre>
      * 4 . . . . .
@@ -33,18 +37,18 @@ public class GameOfLifeTest {
      */
     @Test
     public void neighboursTest() {
-        assertThat(neighboursOf(Tuple.of(2, 2))).containsExactlyInAnyOrder(
-                Tuple.of(1, 3), Tuple.of(2, 3), Tuple.of(3, 3),
-                Tuple.of(1, 2), Tuple.of(3, 2),
-                Tuple.of(1, 1), Tuple.of(2, 1), Tuple.of(3, 1)
+        assertThat(neighboursOf(cell(2, 2)))
+                .containsExactlyInAnyOrder(
+                        cell(1, 3), cell(2, 3), cell(3, 3),
+                        cell(1, 2), cell(3, 2),
+                        cell(1, 1), cell(2, 1), cell(3, 1)
         );
     }
 
     private List<Tuple2<Integer, Integer>> neighboursOf(Tuple2<Integer, Integer> cell) {
-        var deltas = List.of(-1, 0, 1);
-        return deltas.flatMap(x -> deltas.map(y -> Tuple.of(x, y)))
-                .map(delta -> Tuple.of(cell._1 + delta._1, cell._2 + delta._2))
-                .filter(it -> !it.equals(cell));
+        return List.of(-1, 0, 1).flatMap(dx -> List.of(-1, 0, 1).map(dy -> cell(dx, dy)))
+                .filter(it -> !it.equals(cell(0, 0)))
+                .map(it -> cell(cell._1 + it._1, cell._2 + it._2));
     }
 
     /**
@@ -59,11 +63,12 @@ public class GameOfLifeTest {
      */
     @Test
     public void candidatesTest() {
-        assertThat(candidatesFor(List.of(Tuple.of(1, 1), Tuple.of(2, 2)))).containsExactlyInAnyOrder(
-                Tuple.of(1, 3), Tuple.of(2, 3), Tuple.of(3, 3),
-                Tuple.of(0, 2), Tuple.of(1, 2), Tuple.of(2, 2), Tuple.of(3, 2),
-                Tuple.of(0, 1), Tuple.of(1, 1), Tuple.of(2, 1), Tuple.of(3, 1),
-                Tuple.of(0, 0), Tuple.of(1, 0), Tuple.of(2, 0)
+        assertThat(candidatesFor(List.of(cell(1, 1), cell(2, 2))))
+                .containsExactlyInAnyOrder(
+                        cell(1, 3), cell(2, 3), cell(3, 3),
+                        cell(0, 2), cell(1, 2), cell(2, 2), cell(3, 2),
+                        cell(0, 1), cell(1, 1), cell(2, 1), cell(3, 1),
+                        cell(0, 0), cell(1, 0), cell(2, 0)
         );
     }
 
@@ -83,12 +88,51 @@ public class GameOfLifeTest {
      */
     @Test
     public void numberOfLivingNeighboursTest() {
-        var livingCells = List.of(Tuple.of(1, 1), Tuple.of(2, 1), Tuple.of(2, 2));
-        assertThat(numberOfLivingNeighbours(Tuple.of(3, 1), livingCells)).isEqualTo(2);
+        var livingCells = List.of(cell(1, 1), cell(2, 1), cell(2, 2));
+        assertThat(numberOfLivingNeighbours(cell(3, 1), livingCells)).isEqualTo(2);
     }
 
     private int numberOfLivingNeighbours(Tuple2<Integer, Integer> cell, List<Tuple2<Integer, Integer>> livingCells) {
         return neighboursOf(cell).filter(livingCells::contains).size();
     }
 
+    /**
+     * <p><pre>
+     * 4 . . . . .
+     * 3 . . . . .
+     * 2 . * * * .
+     * 1 . . . . .
+     * 0 . . . . .
+     *   0 1 2 3 4
+     * </pre></p>
+     *
+     * becomes
+     *
+     * <p><pre>
+     * 4 . . . . .
+     * 3 . . * . .
+     * 2 . . * . .
+     * 1 . . * . .
+     * 0 . . . . .
+     *   0 1 2 3 4
+     * </pre></p>
+     */
+    @Test
+    public void evolveBlinker() {
+        var world = List.of(cell(1, 2), cell(2, 2), cell(3, 2));
+        assertThat(evolve(world))
+                .containsExactlyInAnyOrder(
+                        cell(2, 1), cell(2, 2), cell(2, 3)
+                );
+    }
+
+    private List<Tuple2<Integer, Integer>> evolve(List<Tuple2<Integer, Integer>> world) {
+        return candidatesFor(world).filter(it -> willLive(it, world));
+    }
+
+    private boolean willLive(Tuple2<Integer, Integer> cell, List<Tuple2<Integer, Integer>> livingCells) {
+        var numberOfLivingNeighbours = numberOfLivingNeighbours(cell, livingCells);
+        var isAlive = livingCells.contains(cell);
+        return isAlive ? List.of(2, 3).contains(numberOfLivingNeighbours) : List.of(3).contains(numberOfLivingNeighbours);
+    }
 }

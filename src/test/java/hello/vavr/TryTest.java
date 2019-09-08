@@ -4,7 +4,7 @@ import io.vavr.Function1;
 import io.vavr.Function2;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
