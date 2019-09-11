@@ -22,10 +22,9 @@ private List<String> fizzBuzz(int count) {
 
 ```
 private List<Tuple2<Integer, Integer>> neighboursOf(Tuple2<Integer, Integer> cell) {
-    var deltas = List.of(-1, 0, 1);
-    return deltas.flatMap(x -> deltas.map(y -> Tuple.of(x, y)))
-            .map(delta -> Tuple.of(cell._1 + delta._1, cell._2 + delta._2))
-            .filter(it -> !it.equals(cell));
+    return List.of(-1, 0, 1).flatMap(dx -> List.of(-1, 0, 1).map(dy -> cell(dx, dy)))
+            .filter(it -> !it.equals(cell(0, 0)))
+            .map(it -> cell(cell._1 + it._1, cell._2 + it._2));
 }
 ```
 
@@ -38,6 +37,12 @@ private List<Tuple2<Integer, Integer>> candidatesFor(List<Tuple2<Integer, Intege
 ```
 private int numberOfLivingNeighbours(Tuple2<Integer, Integer> cell, List<Tuple2<Integer, Integer>> livingCells) {
     return neighboursOf(cell).filter(livingCells::contains).size();
+}
+```
+
+```
+private List<Tuple2<Integer, Integer>> evolve(List<Tuple2<Integer, Integer>> world) {
+    return candidatesFor(world).filter(it -> willLive(it, world));
 }
 ```
 
