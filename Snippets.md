@@ -1,4 +1,9 @@
-# FizzBuzz
+theme: Plain Jane, 1
+autoscale: true
+footer: Java Updside Down with Vavr
+slidenumbers: true
+
+### FizzBuzz
 
 ```
 private List<String> fizzBuzz(int count) {
@@ -18,7 +23,9 @@ private List<String> fizzBuzz(int count) {
 }
 ```
 
-# Game of Life
+---
+
+### Game of Life
 
 ```
 private List<Tuple2<Integer, Integer>> neighboursOf(Tuple2<Integer, Integer> cell) {
@@ -46,7 +53,9 @@ private List<Tuple2<Integer, Integer>> evolve(List<Tuple2<Integer, Integer>> wor
 }
 ```
 
-# List
+---
+
+### List 1
 
 ```
 @Test
@@ -73,6 +82,10 @@ public void foldLeftTest() {
 }
 ```
 
+---
+
+### List 2
+
 ```
 @Test
 public void qsortTest() {
@@ -95,7 +108,9 @@ private List<Integer> qsort(List<Integer> xs) {
 }
 ```
 
-# Option
+---
+
+### Option 1
 
 ```
 @Test
@@ -126,6 +141,10 @@ public void saveDivideTest() {
     );
 }
 ```
+
+---
+
+### Option 2
 
 ```
 @Test
@@ -160,7 +179,9 @@ public void optionIsMonadic() {
 }
 ```
 
-# Try
+---
+
+### Try 1
 
 ```
 @Test
@@ -178,6 +199,10 @@ public void tryToDivide() {
     assertThat(failingDivision.recover(ArithmeticException.class, MAX_VALUE).get()).isEqualTo(MAX_VALUE);
 }
 ```
+
+---
+
+### Try 2
 
 ```
 @Test
