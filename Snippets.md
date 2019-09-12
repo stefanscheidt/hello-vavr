@@ -1,4 +1,9 @@
-# FizzBuzz
+theme: Plain Jane, 1
+autoscale: true
+footer: Java Updside Down with Vavr
+slidenumbers: true
+
+### FizzBuzz
 
 ```
 private List<String> fizzBuzz(int count) {
@@ -18,14 +23,15 @@ private List<String> fizzBuzz(int count) {
 }
 ```
 
-# Game of Life
+---
+
+### Game of Life
 
 ```
 private List<Tuple2<Integer, Integer>> neighboursOf(Tuple2<Integer, Integer> cell) {
-    var deltas = List.of(-1, 0, 1);
-    return deltas.flatMap(x -> deltas.map(y -> Tuple.of(x, y)))
-            .map(delta -> Tuple.of(cell._1 + delta._1, cell._2 + delta._2))
-            .filter(it -> !it.equals(cell));
+    return List.of(-1, 0, 1).flatMap(dx -> List.of(-1, 0, 1).map(dy -> cell(dx, dy)))
+            .filter(it -> !it.equals(cell(0, 0)))
+            .map(it -> cell(cell._1 + it._1, cell._2 + it._2));
 }
 ```
 
@@ -41,7 +47,15 @@ private int numberOfLivingNeighbours(Tuple2<Integer, Integer> cell, List<Tuple2<
 }
 ```
 
-# List
+```
+private List<Tuple2<Integer, Integer>> evolve(List<Tuple2<Integer, Integer>> world) {
+    return candidatesFor(world).filter(it -> willLive(it, world));
+}
+```
+
+---
+
+### List 1
 
 ```
 @Test
@@ -68,6 +82,10 @@ public void foldLeftTest() {
 }
 ```
 
+---
+
+### List 2
+
 ```
 @Test
 public void qsortTest() {
@@ -90,7 +108,9 @@ private List<Integer> qsort(List<Integer> xs) {
 }
 ```
 
-# Option
+---
+
+### Option 1
 
 ```
 @Test
@@ -121,6 +141,10 @@ public void saveDivideTest() {
     );
 }
 ```
+
+---
+
+### Option 2
 
 ```
 @Test
@@ -155,7 +179,9 @@ public void optionIsMonadic() {
 }
 ```
 
-# Try
+---
+
+### Try 1
 
 ```
 @Test
@@ -174,17 +200,36 @@ public void tryToDivide() {
 }
 ```
 
+---
+
+### Try 2
+
 ```
-@Test
-public void tryToReadFiles() {
-    Function1<String, Try<List<String>>> tryReadLinesFrom = filename -> Try.of(() -> readLinesFrom(filename));
+    @Test
+    public void tryCallService() {
+        Function1<String, Try<Response>> tryCall = value -> Try.of(() -> callService(value));
 
-    var result = tryReadLinesFrom.apply("/first.txt")
-            .mapTry(lines -> lines.get(1))
-            .flatMapTry(tryReadLinesFrom::apply)
-            .mapTry(lines -> lines.get(1))
-            .onFailure(Throwable::printStackTrace);
+        Try<Response> result1 = tryCall.apply(null);
+        assertThat(result1.isFailure()).isTrue();
+        System.out.println("Result 1: " + result1);
 
-    assertThat(result.getOrElse("FAILED")).isEqualTo("SUCCESS");
-}
+        Try<Response> result2 = tryCall.apply("INVALID");
+        assertThat(result2.isSuccess()).isTrue();
+        System.out.println("Result 2: " + result2.get());
+
+        Try<Response> result3 = result2.flatMap(response -> tryCall.apply(response.value));
+        assertThat(result3.isFailure()).isTrue();
+        System.out.println("Result 3: " + result3);
+
+        Try<Response> result4 = tryCall.apply("valid");
+        assertThat(result4.isSuccess()).isTrue();
+        System.out.println("Result 4: " + result4.get());
+
+        Try<String> mappedResult4 = result4.map(response -> response.value.substring(0, 1));
+        assertThat(mappedResult4).isEqualTo(success("v"));
+
+        Try<Response> result5 = result4.flatMap(response -> tryCall.apply(response.value));
+        assertThat(result5.isSuccess()).isTrue();
+        System.out.println("Result 5: " + result5.get());
+    }
 ```
