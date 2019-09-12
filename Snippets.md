@@ -205,16 +205,31 @@ public void tryToDivide() {
 ### Try 2
 
 ```
-@Test
-public void tryToReadFiles() {
-    Function1<String, Try<List<String>>> tryReadLinesFrom = filename -> Try.of(() -> readLinesFrom(filename));
+    @Test
+    public void tryCallService() {
+        Function1<String, Try<Response>> tryCall = value -> Try.of(() -> callService(value));
 
-    var result = tryReadLinesFrom.apply("/first.txt")
-            .mapTry(lines -> lines.get(1))
-            .flatMapTry(tryReadLinesFrom::apply)
-            .mapTry(lines -> lines.get(1))
-            .onFailure(Throwable::printStackTrace);
+        Try<Response> result1 = tryCall.apply(null);
+        assertThat(result1.isFailure()).isTrue();
+        System.out.println("Result 1: " + result1);
 
-    assertThat(result.getOrElse("FAILED")).isEqualTo("SUCCESS");
-}
+        Try<Response> result2 = tryCall.apply("INVALID");
+        assertThat(result2.isSuccess()).isTrue();
+        System.out.println("Result 2: " + result2.get());
+
+        Try<Response> result3 = result2.flatMap(response -> tryCall.apply(response.value));
+        assertThat(result3.isFailure()).isTrue();
+        System.out.println("Result 3: " + result3);
+
+        Try<Response> result4 = tryCall.apply("valid");
+        assertThat(result4.isSuccess()).isTrue();
+        System.out.println("Result 4: " + result4.get());
+
+        Try<String> mappedResult4 = result4.map(response -> response.value.substring(0, 1));
+        assertThat(mappedResult4).isEqualTo(success("v"));
+
+        Try<Response> result5 = result4.flatMap(response -> tryCall.apply(response.value));
+        assertThat(result5.isSuccess()).isTrue();
+        System.out.println("Result 5: " + result5.get());
+    }
 ```
