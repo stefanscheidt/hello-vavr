@@ -49,11 +49,20 @@ autoscale: true
 
 ---
 
+[.header: alignment(center)]
+
 # Demo
 
 ---
 
+[.header: alignment(center)]
+[.text: alignment(center)]
+
 # The End
+
+![inline](img/hello-vavr-talk.png)
+
+<https://github.com/stefanscheidt/hello-vavr>
 
 ---
 
