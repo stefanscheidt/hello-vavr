@@ -1,6 +1,7 @@
 package hello.vavr;
 
 import io.vavr.collection.List;
+import io.vavr.collection.Stream;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,7 +17,11 @@ public class FizzBuzzTest {
     }
 
     private List<String> fizzBuzz(int count) {
-        return null;
+        var fizz = Stream.of("", "", "Fizz").cycle();
+        var buzz = Stream.of("", "", "", "", "Buzz").cycle();
+        return fizz.zipWith(buzz, (f, b) -> f + b)
+                .zipWithIndex((fb, idx) -> fb.isBlank() ? (idx + 1) + "" : fb)
+                .take(count).toList();
     }
 
 }

@@ -46,7 +46,10 @@ public class GameOfLifeTest {
     }
 
     private List<Tuple2<Integer, Integer>> neighboursOf(Tuple2<Integer, Integer> cell) {
-        return null;
+        var deltas = List.of(-1, 0, 1);
+        return deltas.flatMap(dx -> deltas.map(dy -> cell(dx, dy)))
+                .filter(it -> !it.equals(cell(0, 0)))
+                .map(it -> cell(cell._1 + it._1, cell._2 + it._2));
     }
 
     /**
@@ -71,7 +74,7 @@ public class GameOfLifeTest {
     }
 
     private List<Tuple2<Integer, Integer>> candidatesFor(List<Tuple2<Integer, Integer>> cells) {
-        return null;
+        return cells.flatMap(this::neighboursOf).prependAll(cells).distinct();
     }
 
     /**
@@ -91,7 +94,7 @@ public class GameOfLifeTest {
     }
 
     private int numberOfLivingNeighbours(Tuple2<Integer, Integer> cell, List<Tuple2<Integer, Integer>> livingCells) {
-        return -1;
+        return neighboursOf(cell).filter(livingCells::contains).size();
     }
 
     /**
@@ -125,13 +128,15 @@ public class GameOfLifeTest {
     }
 
     private List<Tuple2<Integer, Integer>> evolve(List<Tuple2<Integer, Integer>> world) {
-        return null;
+        return candidatesFor(world).filter(it -> willLive(it, world));
     }
 
     private boolean willLive(Tuple2<Integer, Integer> cell, List<Tuple2<Integer, Integer>> livingCells) {
         var numberOfLivingNeighbours = numberOfLivingNeighbours(cell, livingCells);
         var isAlive = livingCells.contains(cell);
-        return isAlive ? List.of(2, 3).contains(numberOfLivingNeighbours) : List.of(3).contains(numberOfLivingNeighbours);
+        return isAlive
+                ? List.of(2, 3).contains(numberOfLivingNeighbours)
+                : List.of(3).contains(numberOfLivingNeighbours);
     }
 
 }

@@ -33,28 +33,13 @@ public class TryTest {
     public void tryCallService() {
         Function1<String, Try<Response>> tryCall = value -> Try.of(() -> callService(value));
 
-        Try<Response> result1 = tryCall.apply(null);
-        assertThat(result1.isFailure()).isTrue();
-        System.out.println("Result 1: " + result1);
+        System.out.println(
+                tryCall.apply("INVALID")
+                        .flatMap(reponse -> tryCall.apply(reponse.value))
+                        .map(reponse -> reponse.value.toUpperCase())
+        );
 
-        Try<Response> result2 = tryCall.apply("INVALID");
-        assertThat(result2.isSuccess()).isTrue();
-        System.out.println("Result 2: " + result2.get());
 
-        Try<Response> result3 = result2.flatMap(response -> tryCall.apply(response.value));
-        assertThat(result3.isFailure()).isTrue();
-        System.out.println("Result 3: " + result3);
-
-        Try<Response> result4 = tryCall.apply("valid");
-        assertThat(result4.isSuccess()).isTrue();
-        System.out.println("Result 4: " + result4.get());
-
-        Try<String> mappedResult4 = result4.map(response -> response.value.substring(0, 1));
-        assertThat(mappedResult4).isEqualTo(success("v"));
-
-        Try<Response> result5 = result4.flatMap(response -> tryCall.apply(response.value));
-        assertThat(result5.isSuccess()).isTrue();
-        System.out.println("Result 5: " + result5.get());
     }
 
     private Response callService(String value) throws IOException {
